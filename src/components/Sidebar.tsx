@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-// import Logo from '../images/logo/logo.svg';
-import ConcordLogo from "../images/logo/logo-transparent.svg";
-import SidebarLinkGroup from "./SidebarLinkGroup";
+// import ConcordLogo from "../images/logo/logo-transparent.svg";
+import logoupdate from "../images/logo/logoupdate.png"
+import logoupdatedark from "../images/logo/logoupdatedark.png"
+import { useEffect, useRef, useState } from "react";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -59,15 +59,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
-      <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-        <NavLink to="/">
-          <img src={ConcordLogo} alt="Logo" />
-        </NavLink>
+      <div className="flex items-center justify-between gap-2 px-6 pt-5.5 lg:pt-6.5">
 
         <button
           ref={trigger}
@@ -90,12 +86,24 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             />
           </svg>
         </button>
+        <NavLink to="/">
+          <img
+            src={logoupdatedark}
+            alt="Logo"
+            className="hidden dark:block"
+          />
+          <img
+            src={logoupdate}
+            alt="Logo"
+            className="block dark:hidden"
+          />
+        </NavLink>
       </div>
       {/* <!-- SIDEBAR HEADER --> */}
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         {/* <!-- Sidebar Menu --> */}
-        <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
+        <nav className="mt-5 py-4 px-4 lg:mt-2   lg:px-6">
           {/* <!-- Menu Group --> */}
           <div>
             <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
@@ -106,9 +114,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Dashboard --> */}
               <NavLink
                 to="/"
-                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname === "" && "bg-graydark dark:bg-meta-4"
-                }`}
+                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname === "" && "bg-graydark dark:bg-meta-4"
+                  }`}
               >
                 <svg
                   className="fill-current"
@@ -142,10 +149,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <NavLink
                   to="/calendar"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("calendar") &&
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes("calendar") &&
                     "bg-graydark dark:bg-meta-4"
-                  }`}
+                    }`}
                 >
                   <svg
                     className="fill-current"
@@ -168,9 +174,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <NavLink
                   to="/tables"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("tables") && "bg-graydark dark:bg-meta-4"
-                  }`}
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes("tables") && "bg-graydark dark:bg-meta-4"
+                    }`}
                 >
                   <svg
                     className="fill-current"
@@ -204,9 +209,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <NavLink
                   to="/profile"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("profile") && "bg-graydark dark:bg-meta-4"
-                  }`}
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes("profile") && "bg-graydark dark:bg-meta-4"
+                    }`}
                 >
                   <svg
                     className="fill-current"
@@ -221,7 +225,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       fill=""
                     />
                     <path
-                      d="M10.8283 9.05627H7.17207C4.16269 9.05627 1.71582 11.5313 1.71582 14.5406V16.875C1.71582 17.2125 1.99707 17.5219 2.3627 17.5219C2.72832 17.5219 3.00957 17.2407 3.00957 16.875V14.5406C3.00957 12.2344 4.89394 10.3219 7.22832 10.3219H10.8564C13.1627 10.3219 15.0752 12.2063 15.0752 14.5406V16.875C15.0752 17.2125 15.3564 17.5219 15.7221 17.5219C16.0877 17.5219 16.3689 17.2407 16.3689 16.875V14.5406C16.2846 11.5313 13.8377 9.05627 10.8283 9.05627Z"  
+                      d="M10.8283 9.05627H7.17207C4.16269 9.05627 1.71582 11.5313 1.71582 14.5406V16.875C1.71582 17.2125 1.99707 17.5219 2.3627 17.5219C2.72832 17.5219 3.00957 17.2407 3.00957 16.875V14.5406C3.00957 12.2344 4.89394 10.3219 7.22832 10.3219H10.8564C13.1627 10.3219 15.0752 12.2063 15.0752 14.5406V16.875C15.0752 17.2125 15.3564 17.5219 15.7221 17.5219C16.0877 17.5219 16.3689 17.2407 16.3689 16.875V14.5406C16.2846 11.5313 13.8377 9.05627 10.8283 9.05627Z"
                       fill=""
                     />
                   </svg>
@@ -533,7 +537,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Ui Elements --> */}
 
               {/* <!-- Menu Item Auth Pages --> */}
-              <SidebarLinkGroup
+              {/* <SidebarLinkGroup
                 activeCondition={
                   pathname === "/auth" || pathname.includes("auth")
                 }
@@ -602,7 +606,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           />
                         </svg>
                       </NavLink>
-                      {/* <!-- Dropdown Menu Start --> */}
+                      <!-- Dropdown Menu Start -->
                       <div
                         className={`translate transform overflow-hidden ${
                           !open && "hidden"
@@ -633,11 +637,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           </li>
                         </ul>
                       </div>
-                      {/* <!-- Dropdown Menu End --> */}
+                      <!-- Dropdown Menu End -->
                     </React.Fragment>
                   );
                 }}
-              </SidebarLinkGroup>
+              </SidebarLinkGroup> */}
               {/* <!-- Menu Item Auth Pages --> */}
             </ul>
           </div>

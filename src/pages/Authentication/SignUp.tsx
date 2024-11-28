@@ -1,8 +1,215 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-// import LogoDark from '../../images/logo/logo-dark.svg';
-// import Logo from '../../images/logo/logo.svg';
+import { register } from '../../services/auth'; // Import the register function from auth.tsx
+
+interface SignUpInp {
+  name: string;
+  email: string;
+  password: string;
+  confPassword: string;
+}
 
 const SignUp = () => {
+  console.log('render');
+
+  const [formInp, setFormInp] = useState<SignUpInp>({
+    name: '',
+    email: '',
+    password: '',
+    confPassword: '',
+  });
+
+  const [error, setError] = useState<SignUpInp>({
+    name: '',
+    email: '',
+    password: '',
+    confPassword: '',
+  });
+
+  const [apiError, setApiError] = useState<string | null>(null); // State to handle API errors
+  const [success, setSuccess] = useState<string | null>(null); // State to handle success message
+  const focusInp = useRef(false);
+
+  const pwdRegex = /^(?=.*[A-Z]).{6,}$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const onChangeInp = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormInp((prevInp) => ({
+      ...prevInp,
+      [field]: event.target.value.trim(),
+    }));
+  };
+
+  const inpValidation = () => {
+    if (formInp.name.length <= 0)
+      setError((prevObj) => ({
+        ...prevObj,
+        name: 'Name field is empty',
+      }));
+    else
+      setError((prevObj) => ({
+        ...prevObj,
+        name: '',
+      }));
+
+    if (!emailRegex.test(formInp.email)) {
+      setError((prevObj) => ({
+        ...prevObj,
+        email: 'Email Invalid',
+      }));
+    } else
+      setError((prevObj) => ({
+        ...prevObj,
+        email: '',
+      }));
+
+    if (!pwdRegex.test(formInp.password)) {
+      setError((prevObj) => ({
+        ...prevObj,
+        password: 'Invalid Password.',
+      }));
+    } else
+      setError((prevObj) => ({
+        ...prevObj,
+        password: '',
+      }));
+
+    if (formInp.password !== formInp.confPassword) {
+      setError((prevObj) => ({
+        ...prevObj,
+        confPassword: 'Passwords do not match.',
+      }));
+    } else
+      setError((prevObj) => ({
+        ...prevObj,
+        confPassword: '',
+      }));
+  };
+
+  const makeUsername = (name: string) => {
+    const username = name.split(" ").join("-");
+
+    return username;
+  }
+
+  const changeFocus = () => {
+    console.log('touched');
+    focusInp.current = true;
+  };
+
+  useEffect(() => {
+    if (focusInp.current) {
+      inpValidation();
+    }
+  }, [formInp]);
+
+  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    inpValidation();
+
+    // Check if there are any validation errors
+    if (Object.values(error).some((err) => err.length > 0)) {
+      return;
+    }
+
+    try {
+      const response = await register({
+        username: makeUsername(formInp.name),
+        email: formInp.email,
+        password: formInp.password,
+        role: "normal"
+      });
+      console.log('Registration successful:', response);
+      setSuccess('Registration successful! You can now log in.');
+      setApiError(null); // Clear any API errors
+    } catch (err: any) {
+      console.error('Registration failed:', err);
+      setApiError(err.message || 'An error occurred during registration.');
+      setSuccess(null); // Clear success message
+    }
+  };
+
+  // import { useEffect, useRef, useState } from 'react';
+  // import { Link } from 'react-router-dom';
+  // // import LogoDark from '../../images/logo/logo-dark.svg';
+  // // import Logo from '../../images/logo/logo.svg';
+
+  // interface SignUpInp {
+  //   name: string,
+  //   email: string,
+  //   password: string,
+  //   confPassword: string
+  // }
+
+  // const SignUp = () => {
+  //   console.log("render");
+
+  //   const [formInp, setFormInp] = useState<SignUpInp>({ name: "", email: "", password: "", confPassword: "" });
+  //   const [error, setError] = useState<SignUpInp>({ name: "", email: "", password: "", confPassword: "" });
+  //   const focusInp = useRef(false);
+  //   const pwdRegex = /^(?=.*[A-Z]).{6,}$/;
+  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  //   const onChangeInp = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  //     setFormInp(prevInp => ({
+  //       ...prevInp,
+  //       [field]: event.target.value.trim(),
+  //     }));
+  //   };
+
+  //   const inpValidation = () => {
+  //     if (formInp.name.length <= 0) setError(prevObj => ({
+  //       ...prevObj,
+  //       name: "Name field is empty"
+  //     }));
+  //     else setError(prevObj => ({
+  //       ...prevObj,
+  //       name: ""
+  //     }));
+
+  //     if (!emailRegex.test(formInp.email)) {
+  //       setError(prevObj => ({
+  //         ...prevObj,
+  //         email: "Email Invalid"
+  //       }));
+  //     } else setError(prevObj => ({
+  //       ...prevObj,
+  //       email: ""
+  //     }));
+
+  //     if (!pwdRegex.test(formInp.password)) {
+  //       setError(prevObj => ({
+  //         ...prevObj,
+  //         password: "Invalid Password."
+  //       }));
+  //     } else setError(prevObj => ({
+  //       ...prevObj,
+  //       password: ""
+  //     }));
+
+  //     if (formInp.password !== formInp.confPassword) {
+  //       setError(prevObj => ({
+  //         ...prevObj,
+  //         confPassword: "Passwords do not match."
+  //       }));
+  //     } else setError(prevObj => ({
+  //       ...prevObj,
+  //       confPassword: ""
+  //     }));
+  //   }
+
+  //   const changeFocus = () => {
+  //     console.log('touched');
+  //     focusInp.current = true;
+  //   }
+
+  //   useEffect(() => {
+  //     if (focusInp.current) {
+  //       inpValidation();
+  //     }
+  //   }, [formInp]);
+
   return (
     <>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -10,7 +217,7 @@ const SignUp = () => {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
-              <h2 className='text-4xl font-extrabold dark:text-white'>Concord Connect</h2>
+                <h2 className='text-4xl font-extrabold dark:text-white'>Concord Connect</h2>
               </Link>
               <p className="2xl:px-20">
                 A placement highlights app for SPIT
@@ -147,7 +354,7 @@ const SignUp = () => {
                 Sign Up to Concord Connect
               </h2>
 
-              <form>
+              <form onSubmit={handleRegister}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Name
@@ -157,6 +364,8 @@ const SignUp = () => {
                       type="text"
                       placeholder="Enter your full name"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      onChange={(event) => onChangeInp("name", event)}
+                      onFocus={() => changeFocus()}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -180,6 +389,9 @@ const SignUp = () => {
                         </g>
                       </svg>
                     </span>
+                    {
+                      (error.name !== "") ? <p className="text-red-600">{error.name}</p> : <></>
+                    }
                   </div>
                 </div>
 
@@ -192,6 +404,8 @@ const SignUp = () => {
                       type="email"
                       placeholder="Enter your SPIT email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      onChange={(event) => onChangeInp("email", event)}
+                      onFocus={() => changeFocus()}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -211,6 +425,9 @@ const SignUp = () => {
                         </g>
                       </svg>
                     </span>
+                    {
+                      (error.email !== "") ? <p className="text-red-600">{error.email}</p> : <></>
+                    }
                   </div>
                 </div>
 
@@ -221,8 +438,10 @@ const SignUp = () => {
                   <div className="relative">
                     <input
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder="6+ Characters, 1 capital letter"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      onChange={(event) => onChangeInp("password", event)}
+                      onFocus={() => changeFocus()}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -246,6 +465,9 @@ const SignUp = () => {
                         </g>
                       </svg>
                     </span>
+                    {
+                      (error.password !== "") ? <p className="text-red-600">{error.password}</p> : <></>
+                    }
                   </div>
                 </div>
 
@@ -258,6 +480,8 @@ const SignUp = () => {
                       type="password"
                       placeholder="Re-enter your password"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      onChange={(event) => onChangeInp("confPassword", event)}
+                      onFocus={() => changeFocus()}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -281,16 +505,39 @@ const SignUp = () => {
                         </g>
                       </svg>
                     </span>
+
+                    {
+                      (error.confPassword !== "") ? <p className="text-red-600">{error.confPassword}</p> : <></>
+                    }
                   </div>
                 </div>
 
                 <div className="mb-5">
+                  {apiError && (
+                    <p className="mb-3 text-center text-sm text-red-600">
+                      {apiError}
+                    </p>
+                  )}
+                  {success && (
+                    <p className="mb-3 text-center text-sm text-green-600">
+                      {success}
+                    </p>
+                  )}
                   <input
                     type="submit"
                     value="Create account"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                   />
                 </div>
+
+                {/* 
+                <div className="mb-5">
+                  <input
+                    type="submit"
+                    value="Create account"
+                    className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                  />
+                </div> */}
 
                 {/* <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>

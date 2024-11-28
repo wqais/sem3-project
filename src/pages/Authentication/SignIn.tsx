@@ -1,9 +1,76 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../../services/auth';
 // import LogoDark from '../../images/logo/logo-dark.svg';
 // import Logo from '../../images/logo/logo.svg';
 // import ConcordLogo from "../../images/logo/logo-transparent.svg";
 
+interface LoginData {
+  email: string;
+  password: string;
+}
+
 const SignIn = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<LoginData>({ email: '', password: '' });
+  const [errors, setErrors] = useState<LoginData>({ email: '', password: '' });
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const handleChange = (field: keyof LoginData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value.trim(),
+    }));
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+
+    // Email Validation
+    if (!emailRegex.test(formData.email)) {
+      setErrors((prev) => ({ ...prev, email: 'Invalid email address.' }));
+      isValid = false;
+    } else {
+      setErrors((prev) => ({ ...prev, email: '' }));
+    }
+
+    // Password Validation
+    if (formData.password.length < 6) {
+      setErrors((prev) => ({ ...prev, password: 'Password must be at least 6 characters long.' }));
+      isValid = false;
+    } else {
+      setErrors((prev) => ({ ...prev, password: '' }));
+    }
+
+    return isValid;
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await login({
+        email: formData.email,
+        password: formData.password
+      }); // Call the login API
+      setApiError(null); // Clear any previous errors
+      setSuccess('Login successful! Redirecting...');
+      console.log('Login Response:', response);
+      // Perform further actions, like storing the token or redirecting
+      navigate("/");
+    } catch (error: any) {
+      setSuccess(null); // Clear success message if the API fails
+      setApiError(error.response?.data?.message || 'Login failed. Please try again.');
+    }
+  };
+
   return (
     <>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -151,7 +218,7 @@ const SignIn = () => {
                 Sign In to Concord Connect
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
@@ -161,6 +228,8 @@ const SignIn = () => {
                       type="email"
                       placeholder="Enter your SPIT email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      value={formData.email}
+                      onChange={(e) => handleChange('email', e.target.value)}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -180,6 +249,8 @@ const SignIn = () => {
                         </g>
                       </svg>
                     </span>
+
+                    {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                   </div>
                 </div>
 
@@ -192,6 +263,8 @@ const SignIn = () => {
                       type="password"
                       placeholder="6+ Characters, 1 Capital letter"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      value={formData.password}
+                      onChange={(e) => handleChange('password', e.target.value)}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -215,6 +288,8 @@ const SignIn = () => {
                         </g>
                       </svg>
                     </span>
+
+                    {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                   </div>
                 </div>
 
@@ -224,6 +299,9 @@ const SignIn = () => {
                     value="Sign In"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                   />
+
+                  {apiError && <p className="mt-2 text-sm text-red-600">{apiError}</p>}
+                  {success && <p className="mt-2 text-sm text-green-600">{success}</p>}
                 </div>
 
                 {/* <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
